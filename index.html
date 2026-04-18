@@ -1,10 +1,13 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>CRM-PRO</title>
+<title>CRM PRO</title>
+
+<!-- 🔥 مكتبة الرسم -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{
@@ -130,7 +133,6 @@ font-size:16px;
 .collections{background:#007bff;}
 .customers{background:#ffc107;color:black;}
 .visits{background:#6f42c1;}
-
 </style>
 </head>
 
@@ -153,44 +155,36 @@ font-size:16px;
 <div id="app">
 
 <div class="stats">
-
 <div class="card">المبيعات <p id="sales">0</p></div>
 <div class="card">التحصيل <p id="collections">0</p></div>
 <div class="card">العملاء <p id="customers">0</p></div>
 <div class="card">الزيارات <p id="visits">0</p></div>
+</div>
 
-
+<!-- 🔥 الرسم -->
+<div style="padding:10px;">
+<canvas id="chart" height="120"></canvas>
 </div>
 
 <div class="menu">
-
 <div class="item" onclick="openForm('sales')">
-<div class="icon sales">💰</div>
-المبيعات
-</div>
+<div class="icon sales">💰</div>المبيعات</div>
 
 <div class="item" onclick="openForm('collections')">
-<div class="icon collections">💵</div>
-التحصيل
-</div>
+<div class="icon collections">💵</div>التحصيل</div>
 
 <div class="item" onclick="openForm('customers')">
-<div class="icon customers">👤</div>
-العملاء
-</div>
+<div class="icon customers">👤</div>العملاء</div>
 
 <div class="item" onclick="openForm('visits')">
-<div class="icon visits">🚚</div>
-الزيارات
-</div>
-
+<div class="icon visits">🚚</div>الزيارات</div>
 </div>
 
 </div>
 
 <script>
 
-// 🔥 روابط النماذج
+// روابط النماذج
 const forms = {
 sales: "https://forms.gle/GiRFeCW7DaK1ZYSw8",
 collections: "https://forms.gle/t54K91Mp8oqY5KGs6",
@@ -214,7 +208,8 @@ location.reload();
 function showApp(){
 document.getElementById("login").style.display="none";
 document.getElementById("app").style.display="block";
-loadData(); // 🔥 مهم
+loadData();
+setInterval(loadData,5000); // 🔥 تحديث تلقائي
 }
 
 // عند فتح الصفحة
@@ -224,27 +219,54 @@ showApp();
 }
 }
 
-// 🔥 فتح النماذج (الحل النهائي)
+// فتح النماذج بدون خروج
 function openForm(type){
-window.location.href = forms[type];
+window.open(forms[type], "_blank");
 }
-
 
 const API = "https://script.google.com/macros/s/AKfycbw_JkiaYpOCxOV0u1D6YlYKspg54xefodMW1aZ42L-dFIASNbBPxNsQiLdEvhESsQPoIQ/exec";
 
+let chart;
+
 function loadData(){
+
 fetch(API)
 .then(res => res.json())
 .then(data => {
 
+// تحديث الأرقام
 document.getElementById("sales").innerText = data.sales || 0;
 document.getElementById("collections").innerText = data.collections || 0;
 document.getElementById("customers").innerText = data.customers || 0;
 document.getElementById("visits").innerText = data.visits || 0;
 
-});
-}
+// الرسم البياني
+let ctx = document.getElementById("chart").getContext("2d");
 
+if(chart) chart.destroy();
+
+chart = new Chart(ctx, {
+type: "bar",
+data: {
+labels: ["المبيعات","التحصيل","العملاء","الزيارات"],
+datasets: [{
+label: "إحصائيات النظام",
+data: [
+data.sales || 0,
+data.collections || 0,
+data.customers || 0,
+data.visits || 0
+]
+}]
+}
+});
+
+})
+.catch(()=>{
+alert("⚠️ خطأ في تحميل البيانات");
+});
+
+}
 </script>
 
 </body>
