@@ -1,0 +1,251 @@
+﻿<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CRM PRO</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#eef4ff;
+direction:rtl;
+}
+
+/* LOGIN */
+#login{
+display:flex;
+height:100vh;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+}
+
+input{
+padding:12px;
+margin:6px;
+width:260px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+button{
+padding:12px;
+width:260px;
+background:#1e5eff;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+button:hover{
+background:#003fa3;
+}
+
+/* APP */
+#app{display:none;}
+
+header{
+background:#1e5eff;
+color:white;
+padding:15px;
+text-align:center;
+font-weight:bold;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logout{
+background:red;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
+font-size:12px;
+}
+
+/* DASHBOARD */
+.stats{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px;
+padding:10px;
+}
+
+.card{
+background:white;
+padding:15px;
+border-radius:10px;
+text-align:center;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.card p{
+font-size:20px;
+color:#1e5eff;
+font-weight:bold;
+}
+
+/* MENU */
+.menu{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px;
+padding:10px;
+}
+
+.item{
+background:white;
+padding:15px;
+border-radius:12px;
+cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+font-weight:bold;
+}
+
+.item:hover{
+background:#1e5eff;
+color:white;
+}
+
+/* ICON */
+.icon{
+width:35px;
+height:35px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-size:16px;
+}
+
+.sales{background:#28a745;}
+.collections{background:#007bff;}
+.customers{background:#ffc107;color:black;}
+.visits{background:#6f42c1;}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<span>📊 CRM SYSTEM</span>
+<span class="logout" onclick="logout()">خروج</span>
+</header>
+
+<!-- LOGIN -->
+<div id="login">
+<h2>تسجيل الدخول</h2>
+<input id="user" placeholder="المستخدم">
+<input id="pass" type="password" placeholder="كلمة المرور">
+<button onclick="login()">دخول</button>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+<div class="stats">
+
+<div class="card">المبيعات <p id="sales">0</p></div>
+<div class="card">التحصيل <p id="collections">0</p></div>
+<div class="card">العملاء <p id="customers">0</p></div>
+<div class="card">الزيارات <p id="visits">0</p></div>
+
+
+</div>
+
+<div class="menu">
+
+<div class="item" onclick="openForm('sales')">
+<div class="icon sales">💰</div>
+المبيعات
+</div>
+
+<div class="item" onclick="openForm('collections')">
+<div class="icon collections">💵</div>
+التحصيل
+</div>
+
+<div class="item" onclick="openForm('customers')">
+<div class="icon customers">👤</div>
+العملاء
+</div>
+
+<div class="item" onclick="openForm('visits')">
+<div class="icon visits">🚚</div>
+الزيارات
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+// 🔥 روابط النماذج
+const forms = {
+sales: "https://forms.gle/GiRFeCW7DaK1ZYSw8",
+collections: "https://forms.gle/t54K91Mp8oqY5KGs6",
+customers: "https://forms.gle/VjmnNVDHKneCgcgv5",
+visits: "https://forms.gle/F4LfeiiUPkx53HfP9"
+};
+
+// تسجيل الدخول
+function login(){
+localStorage.setItem("crm_login","1");
+showApp();
+}
+
+// تسجيل خروج
+function logout(){
+localStorage.removeItem("crm_login");
+location.reload();
+}
+
+// عرض النظام
+function showApp(){
+document.getElementById("login").style.display="none";
+document.getElementById("app").style.display="block";
+loadData(); // 🔥 مهم
+}
+
+// عند فتح الصفحة
+window.onload=function(){
+if(localStorage.getItem("crm_login")=="1"){
+showApp();
+}
+}
+
+// 🔥 فتح النماذج (الحل النهائي)
+function openForm(type){
+window.location.href = forms[type];
+}
+
+
+const API = "https://script.google.com/macros/s/AKfycbw_JkiaYpOCxOV0u1D6YlYKspg54xefodMW1aZ42L-dFIASNbBPxNsQiLdEvhESsQPoIQ/exec";
+
+function loadData(){
+fetch(API)
+.then(res => res.json())
+.then(data => {
+
+document.getElementById("sales").innerText = data.sales || 0;
+document.getElementById("collections").innerText = data.collections || 0;
+document.getElementById("customers").innerText = data.customers || 0;
+document.getElementById("visits").innerText = data.visits || 0;
+
+});
+}
+
+</script>
+
+</body>
+</html>
